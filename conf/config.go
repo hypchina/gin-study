@@ -8,12 +8,26 @@ type mysql struct {
 	DSN      string
 }
 
-type configContext struct {
-	Mysql mysql
+type common struct {
+	Env    string
+	Lang   string
+	Listen string
+	Addr   string
 }
 
-func Config() *configContext {
-	return &configContext{
+type config struct {
+	Common common
+	Mysql  mysql
+}
+
+func Config() *config {
+	return &config{
+		Common: common{
+			Env:    env.Get("env", "local"),
+			Listen: env.Get("listen", "8080"),
+			Addr:   ":" + env.Get("listen", "8080"),
+			Lang:   env.Get("lang", "cn"),
+		},
 		Mysql: mysql{
 			User:     env.Get("mysql_user", ""),
 			Password: env.Get("mysql_password", ""),

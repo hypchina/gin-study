@@ -17,8 +17,10 @@ type UserController struct {
 func (ctrl *UserController) Index(ctx *gin.Context) {
 	if exists, user := dao.UserInstance().GetByEmail(ctx.DefaultQuery("email", "-1")); exists {
 		ctrl.Response(ctx, enum.StatusOk, user)
+		return
 	}
 	ctrl.Response(ctx, enum.StatusDataIsNotExists)
+	return
 }
 
 func (ctrl *UserController) Create(ctx *gin.Context) {
@@ -28,6 +30,7 @@ func (ctrl *UserController) Create(ctx *gin.Context) {
 
 	if err != nil {
 		ctrl.Response(ctx, enum.StatusParamIsError, err.Error())
+		return
 	}
 
 	userService := service.UserInstance()
@@ -35,6 +38,7 @@ func (ctrl *UserController) Create(ctx *gin.Context) {
 
 	if err != nil {
 		ctrl.Response(ctx, enum.StatusDataOpError, err.Error())
+		return
 	}
 
 	ctrl.Response(ctx, enum.StatusOk, user)

@@ -1,6 +1,8 @@
 package resource
 
-import "gin-study/app/core/env"
+import (
+	"gin-study/conf"
+)
 
 var langMap = map[string]map[string]string{
 	"cn": {
@@ -11,8 +13,7 @@ var langMap = map[string]map[string]string{
 }
 
 func Trans(key string) string {
-	lang := env.Get("lang", "cn")
-	item, ok := langMap[lang]
+	item, ok := langMap[conf.Config().Common.Lang]
 	if ok {
 		val, ok2 := item[key]
 		if ok2 {
