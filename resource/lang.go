@@ -9,6 +9,8 @@ var langMap = map[string]map[string]string{
 		"user_not_exists": "用户不存在",
 		"user_exists":     "用户已注册",
 		"email_exists":    "该邮箱已注册",
+		"pwd_error":       "用户名或密码错误",
+		"system_error":    "系统错误",
 	},
 }
 

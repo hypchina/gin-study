@@ -4,7 +4,6 @@ import (
 	"C"
 	"gin-study/app/http/controllers"
 	"gin-study/app/http/filters"
-	"gin-study/app/logic/dao"
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/service"
 	"github.com/gin-gonic/gin"
@@ -14,32 +13,46 @@ type UserController struct {
 	*controllers.Controller
 }
 
+//用户个人信息
 func (ctrl *UserController) Index(ctx *gin.Context) {
-	if exists, user := dao.UserInstance().GetByEmail(ctx.DefaultQuery("email", "-1")); exists {
-		ctrl.Response(ctx, enum.StatusOk, user)
-		return
-	}
-	ctrl.Response(ctx, enum.StatusDataIsNotExists)
-	return
+	ctrl.Response(ctx, enum.StatusOk, ctrl.AuthBean(ctx).UserBean())
 }
 
-func (ctrl *UserController) Create(ctx *gin.Context) {
+//用户注册
+func (ctrl *UserController) Register(ctx *gin.Context) {
 
-	var userFilter filters.UserFilter
-	err := ctx.ShouldBind(&userFilter)
-
+	var filter filters.UserRegister
+	err := ctx.ShouldBind(&filter)
 	if err != nil {
 		ctrl.Response(ctx, enum.StatusParamIsError, err.Error())
 		return
 	}
 
-	userService := service.UserInstance()
-	user, err := userService.Create(userFilter)
-
+	UserService := service.UserInstance()
+	err = UserService.Create(filter)
 	if err != nil {
 		ctrl.Response(ctx, enum.StatusDataOpError, err.Error())
 		return
 	}
 
-	ctrl.Response(ctx, enum.StatusOk, user)
+	ctrl.Response(ctx, enum.StatusOk)
+}
+
+func (ctrl *UserController) Login(ctx *gin.Context) {
+
+	var filter filters.UserLogin
+	err := ctx.ShouldBind(&filter)
+	if err != nil {
+		ctrl.Response(ctx, enum.StatusParamIsError, err.Error())
+		return
+	}
+
+	UserService := service.UserInstance()
+	authBean, err := UserService.CreateAuth(filter)
+	if err != nil {
+		ctrl.Response(ctx, enum.StatusDataOpError, err.Error())
+		return
+	}
+
+	ctrl.Response(ctx, enum.StatusOk, authBean)
 }

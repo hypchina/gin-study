@@ -15,10 +15,14 @@ func Dispatch(r *gin.Engine) {
 func apiRoute(r *gin.Engine) {
 	UserController := &api.UserController{}
 	auth := r.Group("/")
-	auth.Use(middleware.Auth())
+	auth.Use(middleware.RequestLogger())
 	{
-		auth.GET("/user", UserController.Index)
-		auth.POST("/user", UserController.Create)
+		auth.POST("/user/register", UserController.Register)
+		auth.POST("/user/login", UserController.Login)
+		auth.Use(middleware.Auth())
+		{
+			auth.GET("/user", UserController.Index)
+		}
 	}
 }
 

@@ -9,7 +9,8 @@ const (
 	StatusParamIsError    = 20000 //参数级
 	StatusDataIsNotExists = 30000 //业务级
 	StatusDataOpError     = 39999 //业务级
-	StatusUnknownError    = 49999 //系统级
+	StatusAuthForbidden   = 40001 //权限
+	StatusUnknownError    = 50000 //系统级
 )
 
 var statusText = map[int]string{
@@ -17,6 +18,7 @@ var statusText = map[int]string{
 	StatusParamIsError:    "参数错误",
 	StatusDataIsNotExists: "数据不存在",
 	StatusDataOpError:     "操作失败！请稍候重试",
+	StatusAuthForbidden:   "未授权！",
 	StatusUnknownError:    "未知错误！请稍候重试",
 }
 

@@ -17,10 +17,16 @@ require (
 	github.com/gin-gonic/gin v1.3.0
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/goinggo/mapstructure v0.0.0-20140717182941-194205d9b4a9
 	github.com/golang/protobuf v1.3.1 // indirect
+	github.com/google/uuid v1.1.1
+	github.com/jinzhu/gorm v1.9.2 // indirect
+	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
 	github.com/json-iterator/go v1.1.6 // indirect
 	github.com/leodido/go-urn v1.1.0 // indirect
+	github.com/lunny/got v0.0.0-20140525120503-f70a11a7f423 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect

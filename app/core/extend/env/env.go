@@ -18,7 +18,7 @@ const (
 	envNull = "null"
 )
 
-func Load() {
+func Init() {
 	if !flag {
 		byteSet, err := ioutil.ReadFile(envFn)
 		helper.CheckErr(err)

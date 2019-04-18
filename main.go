@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gin-study/app/core/env"
+	"gin-study/app/core/extend/env"
 	"gin-study/app/core/utils"
 	"gin-study/conf"
 	"gin-study/routes"
@@ -9,8 +9,9 @@ import (
 )
 
 func main() {
-	env.Load()
+	env.Init()
 	utils.DbInit()
+	utils.RedisInit()
 	r := gin.Default()
 	routes.Dispatch(r)
 	_ = r.Run(conf.Config().Common.Addr)
