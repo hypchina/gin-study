@@ -52,7 +52,7 @@ func (service *UserService) CreateAuth(filter filters.UserLogin) (authBean *bean
 	}
 
 	TokenDao := dao.TokenDaoInstance()
-	ok, TokenEntity := TokenDao.CreateAndStore(UserModel.Id)
+	ok, TokenEntity := TokenDao.CreateAndSet(UserModel.Id)
 	if !ok {
 		return nil, helper.CreateErr(resource.Trans("system_error"))
 	}
@@ -66,7 +66,7 @@ func (service *UserService) CreateAuth(filter filters.UserLogin) (authBean *bean
 
 func (service *UserService) GetAuth(clientId string) (bool, *bean.AuthBean) {
 
-	ok, TokenEntity := dao.TokenDaoInstance().GetToken(clientId)
+	ok, TokenEntity := dao.TokenDaoInstance().Get(clientId)
 	if !ok {
 		return false, nil
 	}

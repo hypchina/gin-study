@@ -30,12 +30,12 @@ func (dao *tokenDao) Create(uid int64) *entity.TokenEntity {
 	return &token
 }
 
-func (dao *tokenDao) CreateAndStore(uid int64) (bool, *entity.TokenEntity) {
+func (dao *tokenDao) CreateAndSet(uid int64) (bool, *entity.TokenEntity) {
 	var token = dao.Create(uid)
 	return dao.Set(token), token
 }
 
-func (dao *tokenDao) GetToken(clientId string) (bool, *entity.TokenEntity) {
+func (dao *tokenDao) Get(clientId string) (bool, *entity.TokenEntity) {
 	redisKey := enum.RedisTokenKey(clientId)
 	tokenStr, err := dao.redisClient.Get(redisKey).Result()
 	var token entity.TokenEntity
