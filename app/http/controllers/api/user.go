@@ -7,7 +7,6 @@ import (
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/service"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 type UserController struct {
@@ -16,9 +15,6 @@ type UserController struct {
 
 //用户个人信息
 func (ctrl *UserController) Index(ctx *gin.Context) {
-
-	log.Println("User/Index")
-
 	ctrl.Response(ctx, enum.StatusOk, ctrl.AuthBean(ctx).UserBean())
 }
 

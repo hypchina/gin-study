@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"gin-study/app/core/helper"
 	"gin-study/app/core/utils"
 	"gin-study/app/http/controllers"
 	"gin-study/app/http/filters"
@@ -8,30 +9,29 @@ import (
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/service"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 func Request() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var controller = &controllers.Controller{}
 		utils.Try(func() {
+			ctx.Writer.Header().Set(enum.TagRequestId, helper.CreateUUID())
+			ctx.Writer.Header().Set(enum.TagRequestAt, helper.GetDateByFormat())
 			ctx.Next()
 		}).Catch(&bean.ResponseBean{}, func(i interface{}) {
-			log.Println("Exception:ResponseBean")
 			ResponseBean, _ := (i).(*bean.ResponseBean)
 			ctx.Set(enum.TagResponseBean, bean.ResponseBeanInstance().Response(ResponseBean.Code, ResponseBean.Msg))
 		}).Catch("", func(i interface{}) {
-			log.Println("Exception:String")
 			ResponseBean := bean.ResponseBeanInstance().Response(enum.StatusUnknownError)
 			ctx.Set(enum.TagResponseBean, bean.ResponseBeanInstance().Response(ResponseBean.Code))
 		}).Finally(func() {
-			log.Println("Finally")
+			var controller = &controllers.Controller{}
 			ok, ResponseBean := controller.ResolveResponse(ctx)
 			if !ok {
 				ResponseBean = bean.ResponseBeanInstance().Response(enum.StatusUnknownResponse)
 			}
 			ctx.JSON(enum.StatusOk, ResponseBean)
 			ctx.Abort()
+			service.LogSysRequestServiceInstance().Insert(ctx, ResponseBean)
 		})
 	}
 }
@@ -52,6 +52,7 @@ func Auth() gin.HandlerFunc {
 			return
 		}
 		ctx.Set(enum.TagUserBean, authBean)
+		ctx.Set(enum.TagRequestUid, authBean.UserEntity.Id)
 		ctx.Next()
 	}
 }

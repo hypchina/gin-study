@@ -65,11 +65,18 @@ func (service *UserService) CreateAuth(filter filters.UserLogin) (authBean *bean
 }
 
 func (service *UserService) GetAuth(clientId string) (bool, *bean.AuthBean) {
+
 	ok, TokenEntity := dao.TokenDaoInstance().GetToken(clientId)
 	if !ok {
 		return false, nil
 	}
-	_, UserModel := dao.UserInstance().GetById(TokenEntity.Uid)
+
+	ok, UserModel := dao.UserInstance().GetById(TokenEntity.Uid)
+	if !ok {
+		dao.TokenDaoInstance().Del(clientId)
+		return false, nil
+	}
+
 	return true, &bean.AuthBean{
 		UserEntity:  UserModel,
 		TokenEntity: TokenEntity,

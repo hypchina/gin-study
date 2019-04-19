@@ -52,3 +52,12 @@ func (dao *tokenDao) Set(token *entity.TokenEntity) bool {
 	ok, err := dao.redisClient.SetNX(redisKey, jsonStr, time.Duration(token.ExpireAt)*time.Second).Result()
 	return ok && helper.CheckErr(err)
 }
+
+func (dao *tokenDao) Del(clientId string) bool {
+	redisKey := enum.RedisTokenKey(clientId)
+	err := dao.redisClient.Del(redisKey).Err()
+	if err != nil {
+		return false
+	}
+	return true
+}
