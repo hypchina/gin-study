@@ -6,4 +6,5 @@ const (
 	TagRequestId    = "x-request-id"
 	TagRequestAt    = "x-request-at"
 	TagRequestUid   = "uid"
+	TagResponseAt   = "x-response-at"
 )

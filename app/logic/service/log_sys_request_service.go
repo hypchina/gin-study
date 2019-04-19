@@ -19,8 +19,8 @@ func LogSysRequestServiceInstance() *LogSysRequestService {
 	}
 }
 
-func (service *LogSysRequestService) Insert(ctx *gin.Context, bean *bean.ResponseBean) bool {
-	ok, _ := service.logSysRequestDao.Insert(models.LogSysRequest{
+func (service *LogSysRequestService) SyncInsert(ctx *gin.Context, bean *bean.ResponseBean) {
+	LogSysRequestModel := models.LogSysRequest{
 		Uid:           ctx.GetInt64(enum.TagRequestUid),
 		RequestId:     ctx.Writer.Header().Get(enum.TagRequestId),
 		RequestApi:    ctx.Request.URL.Path,
@@ -33,8 +33,8 @@ func (service *LogSysRequestService) Insert(ctx *gin.Context, bean *bean.Respons
 		ResponseCode:  bean.Code,
 		ResponseMsg:   bean.Msg,
 		ResponseBody:  "",
-		ResponseAt:    helper.GetDateByFormat(),
+		ResponseAt:    ctx.Writer.Header().Get(enum.TagResponseAt),
 		CreatedAt:     helper.GetDateByFormat(),
-	})
-	return ok
+	}
+	go service.logSysRequestDao.Insert(LogSysRequestModel)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type UserDao struct {
-	Base
+	base Base
 }
 
 func UserInstance() *UserDao {
@@ -20,21 +20,21 @@ func UserInstance() *UserDao {
 
 func (dao *UserDao) GetById(id int64) (boolean bool, userModel *models.UcUser) {
 	user := &models.UcUser{}
-	exists, err := dao.Orm.Id(id).Get(user)
+	exists, err := dao.base.Orm.Id(id).Get(user)
 	helper.CheckErr(err)
 	return exists, user
 }
 
 func (dao *UserDao) GetByEmail(email string) (boolean bool, userModel *models.UcUser) {
 	user := &models.UcUser{}
-	exists, err := dao.Orm.Where("email=? and status=?", email, 1).Get(user)
+	exists, err := dao.base.Orm.Where("email=? and status=?", email, 1).Get(user)
 	helper.CheckErr(err)
 	return exists, user
 }
 
 func (dao *UserDao) IsExistsByEmail(email string) bool {
 	user := &models.UcUser{}
-	countNum, err := dao.Orm.Where("email=? and status=?", email, 1).Count(user)
+	countNum, err := dao.base.Orm.Where("email=? and status=?", email, 1).Count(user)
 	helper.CheckErr(err)
 	if countNum > 0 {
 		return true
@@ -43,6 +43,6 @@ func (dao *UserDao) IsExistsByEmail(email string) bool {
 }
 
 func (dao *UserDao) CreateUser(user *models.UcUser) (boolean bool, id int64) {
-	id, err := dao.Orm.InsertOne(user)
+	id, err := dao.base.Orm.InsertOne(user)
 	return helper.CheckErr(err), id
 }
