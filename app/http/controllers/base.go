@@ -6,27 +6,38 @@ import (
 	"gin-study/app/logic/bean"
 	"gin-study/app/logic/enum"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 )
 
 type Controller struct {
 }
 
-func (ctrl *Controller) Error404() {
-	log.Println("404")
+func (ctrl *Controller) Error404(ctx *gin.Context) {
+	ctx.JSON(http.StatusNotFound, bean.ResponseBeanInstance().Response(enum.StatusNotFound))
+	ctx.Abort()
+}
+
+func (ctrl *Controller) Ping(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, bean.ResponseBeanInstance().Response(enum.StatusOk, "ping"))
+	ctx.Abort()
 }
 
 func (ctrl *Controller) AuthBean(ctx *gin.Context) *bean.AuthBean {
 	authBeanInterface, _ := ctx.Get(enum.TagUserBean)
 	authBean, ok := (authBeanInterface).(*bean.AuthBean)
 	if !ok {
-		panic(helper.CreateErr(enum.StatusAuthForbidden))
+		utils.NewException(enum.StatusAuthForbidden, helper.CreateMsg(enum.StatusAuthForbidden))
 	}
 	return authBean
 }
 
+func (ctrl *Controller) ResolveResponse(ctx *gin.Context) (bool, *bean.ResponseBean) {
+	BeanInterface, _ := ctx.Get(enum.TagResponseBean)
+	Bean, ok := (BeanInterface).(*bean.ResponseBean)
+	return ok, Bean
+}
+
 func (ctrl *Controller) Response(ctx *gin.Context, code int, dataOrMsgParams ...interface{}) {
-	ctx.JSON(http.StatusOK, utils.ResponseInstance().Response(code, dataOrMsgParams...))
+	ctx.Set(enum.TagResponseBean, bean.ResponseBeanInstance().Response(code, dataOrMsgParams...))
 	ctx.Abort()
 }

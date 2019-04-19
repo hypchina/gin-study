@@ -10,7 +10,9 @@ const (
 	StatusDataIsNotExists = 30000 //业务级
 	StatusDataOpError     = 39999 //业务级
 	StatusAuthForbidden   = 40001 //权限
+	StatusNotFound        = 49999 //系统级
 	StatusUnknownError    = 50000 //系统级
+	StatusUnknownResponse = 59999 //未定义接口响应
 )
 
 var statusText = map[int]string{
@@ -20,6 +22,8 @@ var statusText = map[int]string{
 	StatusDataOpError:     "操作失败！请稍候重试",
 	StatusAuthForbidden:   "未授权！",
 	StatusUnknownError:    "未知错误！请稍候重试",
+	StatusNotFound:        "未知请求！",
+	StatusUnknownResponse: "无正确响应",
 }
 
 func StatusText(code int) string {

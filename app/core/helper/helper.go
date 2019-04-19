@@ -35,14 +35,19 @@ func GetDateByFormat(timeParams ...time.Time) string {
 	return timeVars.Format("2006-01-02 15:04:05")
 }
 
-func CreateErr(param interface{}) error {
+func CreateMsg(param interface{}) string {
 	paramType := fmt.Sprintf("%T", param)
-	var err string
+	var msg string
 	if paramType == "int" {
-		err = enum.StatusText(param.(int))
+		msg = enum.StatusText(param.(int))
 	} else {
-		err = param.(string)
+		msg = param.(string)
 	}
+	return msg
+}
+
+func CreateErr(param interface{}) error {
+	err := CreateMsg(param)
 	return errors.New(err)
 }
 

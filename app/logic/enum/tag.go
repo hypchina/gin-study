@@ -1,5 +1,6 @@
 package enum
 
 const (
-	TagUserBean = "TagUserBean"
+	TagResponseBean = "TagResponseBean"
+	TagUserBean     = "TagUserBean"
 )
