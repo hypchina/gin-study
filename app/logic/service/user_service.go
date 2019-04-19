@@ -71,7 +71,7 @@ func (service *UserService) GetAuth(clientId string) (bool, *bean.AuthBean) {
 		return false, nil
 	}
 
-	ok, UserModel := dao.UserInstance().GetById(TokenEntity.Uid)
+	ok, UserModel := dao.UserInstance().GetByIdAndCache(TokenEntity.Uid)
 	if !ok {
 		dao.TokenDaoInstance().Del(clientId)
 		return false, nil

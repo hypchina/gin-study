@@ -1,9 +1,12 @@
 package dao
 
 import (
+	"encoding/json"
 	"gin-study/app/core/helper"
 	"gin-study/app/core/utils"
+	"gin-study/app/logic/enum"
 	"gin-study/app/logic/models"
+	"time"
 )
 
 type UserDao struct {
@@ -16,6 +19,26 @@ func UserInstance() *UserDao {
 			Orm: utils.ORM(),
 		},
 	}
+}
+
+func (dao *UserDao) GetByIdAndCache(id int64) (bool, *models.UcUser) {
+	redisClient := utils.RedisClient()
+	redisKey := enum.RedisUserKey(id)
+	jsonStr, err := redisClient.Get(redisKey).Result()
+	UcUser := &models.UcUser{}
+	if err == nil && jsonStr != "" {
+		err = json.Unmarshal([]byte(jsonStr), UcUser)
+		if err == nil {
+			return true, UcUser
+		}
+	}
+	exists, err := dao.base.Orm.Id(id).Get(UcUser)
+	if exists {
+		jsonStr, _ := json.Marshal(UcUser)
+		_, err := redisClient.Set(redisKey, jsonStr, time.Hour*2).Result()
+		helper.CheckErr(err)
+	}
+	return exists, UcUser
 }
 
 func (dao *UserDao) GetById(id int64) (boolean bool, userModel *models.UcUser) {

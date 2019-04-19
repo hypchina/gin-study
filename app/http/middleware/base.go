@@ -9,6 +9,7 @@ import (
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/service"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func Request() gin.HandlerFunc {
@@ -21,6 +22,7 @@ func Request() gin.HandlerFunc {
 			ResponseBean, _ := (i).(*bean.ResponseBean)
 			ctx.Set(enum.TagResponseBean, bean.ResponseBeanInstance().Response(ResponseBean.Code, ResponseBean.Msg))
 		}).Catch("", func(i interface{}) {
+			log.Print("panic: ", i)
 			ResponseBean := bean.ResponseBeanInstance().Response(enum.StatusUnknownError)
 			ctx.Set(enum.TagResponseBean, bean.ResponseBeanInstance().Response(ResponseBean.Code))
 		}).Finally(func() {
