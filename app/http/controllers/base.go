@@ -25,10 +25,11 @@ func (ctrl *Controller) Ping(ctx *gin.Context) {
 func (ctrl *Controller) AuthBean(ctx *gin.Context) *bean.AuthBean {
 	authBeanInterface, _ := ctx.Get(enum.TagUserBean)
 	authBean, ok := (authBeanInterface).(*bean.AuthBean)
-	if !ok {
-		utils.NewException(enum.StatusAuthForbidden, helper.CreateMsg(enum.StatusAuthForbidden))
+	if ok && authBean != nil {
+		return authBean
 	}
-	return authBean
+	utils.NewException(enum.StatusAuthForbidden, helper.CreateMsg(enum.StatusAuthForbidden))
+	return nil
 }
 
 func (ctrl *Controller) ResolveResponse(ctx *gin.Context) (bool, *bean.ResponseBean) {

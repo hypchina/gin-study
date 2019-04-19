@@ -8,26 +8,30 @@ import (
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/service"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	"log"
 )
 
-func RequestLogger() gin.HandlerFunc {
+func Request() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var controller = &controllers.Controller{}
 		utils.Try(func() {
 			ctx.Next()
 		}).Catch(&bean.ResponseBean{}, func(i interface{}) {
-			ResponseBean, ok := (i).(*bean.ResponseBean)
-			if ok {
-				controller.Response(ctx, ResponseBean.Code, ResponseBean.Msg)
-			}
+			log.Println("Exception:ResponseBean")
+			ResponseBean, _ := (i).(*bean.ResponseBean)
+			ctx.Set(enum.TagResponseBean, bean.ResponseBeanInstance().Response(ResponseBean.Code, ResponseBean.Msg))
+		}).Catch("", func(i interface{}) {
+			log.Println("Exception:String")
+			ResponseBean := bean.ResponseBeanInstance().Response(enum.StatusUnknownError)
+			ctx.Set(enum.TagResponseBean, bean.ResponseBeanInstance().Response(ResponseBean.Code))
 		}).Finally(func() {
+			log.Println("Finally")
 			ok, ResponseBean := controller.ResolveResponse(ctx)
-			if ok {
-				ctx.JSON(http.StatusOK, ResponseBean)
-			} else {
-				ctx.JSON(http.StatusInternalServerError, bean.ResponseBeanInstance().Response(enum.StatusUnknownResponse))
+			if !ok {
+				ResponseBean = bean.ResponseBeanInstance().Response(enum.StatusUnknownResponse)
 			}
+			ctx.JSON(enum.StatusOk, ResponseBean)
+			ctx.Abort()
 		})
 	}
 }
@@ -44,7 +48,7 @@ func Auth() gin.HandlerFunc {
 		UserService := service.UserInstance()
 		ok, authBean := UserService.GetAuth(filter.ClientId)
 		if !ok {
-			//controller.Response(ctx, enum.StatusAuthForbidden)
+			controller.Response(ctx, enum.StatusAuthForbidden)
 			return
 		}
 		ctx.Set(enum.TagUserBean, authBean)

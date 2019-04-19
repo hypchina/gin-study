@@ -27,9 +27,8 @@ func (t *tryStruct) Finally(f func()) {
 			if h, ok := t.catches[reflect.TypeOf(e)]; ok {
 				h(e)
 			}
-
-			f()
 		}
+		f()
 	}()
 	t.hold()
 }

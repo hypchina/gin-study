@@ -17,7 +17,7 @@ func apiRoute(r *gin.Engine) {
 	r.NoRoute(BaseController.Error404)
 	r.NoMethod(BaseController.Error404)
 	auth := r.Group("/")
-	auth.Use(middleware.RequestLogger())
+	auth.Use(middleware.Request())
 	{
 		auth.POST("/", BaseController.Ping)
 		auth.POST("/user/register", UserController.Register)
