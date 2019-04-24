@@ -6,7 +6,7 @@
     ├── README.md
     ├── app
     │   ├── core
-    │   │   ├── env 
+    │   │   ├── extend 
     │   │   ├── helper 快捷方法
     │   │   └── utils  工具类如db,mysql
     │   ├── http       具体应用层
@@ -17,7 +17,7 @@
     │       ├── bean        接口响应类
     │       ├── dao         数据提供/操作
     │       ├── entity      数据实体
-    │       ├── enum        常量,检举,标签
+    │       ├── enum        常量,枚举,标签
     │       ├── models      数据模型
     │       └── service     数据服务
     ├── conf
