@@ -30,7 +30,7 @@ func (ctrl *Broadcast) Read(ctx *gin.Context) {
 
 	msgId := ctx.Query("msg_id")
 	if msgId == "" {
-		ctrl.Response(ctx, enum.StatusParamIsError, "参数msg_id缺失")
+		ctrl.Response(ctx, enum.StatusParamIsError, "miss msg_id")
 		return
 	}
 
@@ -39,6 +39,6 @@ func (ctrl *Broadcast) Read(ctx *gin.Context) {
 		return
 	}
 
-	ctrl.Response(ctx, enum.StatusNotFound, "消息不存在")
+	ctrl.Response(ctx, enum.StatusNotFound)
 	return
 }
