@@ -21,3 +21,9 @@ type UserLogin struct {
 	Password string `form:"password" binding:"required"`
 	baseFilter
 }
+
+type BroadcastNotifyFilter struct {
+	ToUid   string `form:"to_uid" uri:"to_uid"  binding:"required"`
+	MsgType int64  `form:"msg_type" uri:"msg_type"  binding:"required"`
+	MsgBody string `form:"msg_body" uri:"msg_body"  binding:"required"`
+}

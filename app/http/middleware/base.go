@@ -31,8 +31,8 @@ func Request() gin.HandlerFunc {
 			if !ok {
 				ResponseBean = bean.ResponseBeanInstance().Response(enum.StatusUnknownResponse)
 			}
-			ctx.JSON(enum.StatusOk, ResponseBean)
 			ctx.Writer.Header().Set(enum.TagResponseAt, helper.GetDateByFormat())
+			ctx.JSON(enum.StatusOk, ResponseBean)
 			ctx.Abort()
 			service.LogSysRequestServiceInstance().SyncInsert(ctx, ResponseBean)
 		})

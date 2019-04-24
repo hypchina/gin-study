@@ -3,20 +3,18 @@ package dao
 import (
 	"encoding/json"
 	"gin-study/app/core/helper"
-	"gin-study/app/core/utils"
 	"gin-study/app/logic/entity"
 	"gin-study/app/logic/enum"
-	"github.com/go-redis/redis"
 	"time"
 )
 
 type tokenDao struct {
-	redisClient *redis.Client
+	connect connect
 }
 
 func TokenDaoInstance() *tokenDao {
 	return &tokenDao{
-		redisClient: utils.RedisClient(),
+		connect: connectInit(),
 	}
 }
 
@@ -37,7 +35,7 @@ func (dao *tokenDao) CreateAndSet(uid int64) (bool, *entity.TokenEntity) {
 
 func (dao *tokenDao) Get(clientId string) (bool, *entity.TokenEntity) {
 	redisKey := enum.RedisTokenKey(clientId)
-	tokenStr, err := dao.redisClient.Get(redisKey).Result()
+	tokenStr, err := dao.connect.redisClient.Get(redisKey).Result()
 	var token entity.TokenEntity
 	if err != nil {
 		return false, nil
@@ -49,13 +47,13 @@ func (dao *tokenDao) Get(clientId string) (bool, *entity.TokenEntity) {
 func (dao *tokenDao) Set(token *entity.TokenEntity) bool {
 	redisKey := enum.RedisTokenKey(token.ClientId)
 	jsonStr, _ := json.Marshal(token)
-	ok, err := dao.redisClient.SetNX(redisKey, jsonStr, time.Duration(token.ExpireAt)*time.Second).Result()
+	ok, err := dao.connect.redisClient.SetNX(redisKey, jsonStr, time.Duration(token.ExpireAt)*time.Second).Result()
 	return ok && helper.CheckErr(err)
 }
 
 func (dao *tokenDao) Del(clientId string) bool {
 	redisKey := enum.RedisTokenKey(clientId)
-	err := dao.redisClient.Del(redisKey).Err()
+	err := dao.connect.redisClient.Del(redisKey).Err()
 	if err != nil {
 		return false
 	}

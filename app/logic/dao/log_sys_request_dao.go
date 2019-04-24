@@ -2,23 +2,20 @@ package dao
 
 import (
 	"gin-study/app/core/helper"
-	"gin-study/app/core/utils"
 	"gin-study/app/logic/models"
 )
 
 type LogSysRequestDao struct {
-	base Base
+	connect connect
 }
 
 func LogSysRequestDaoInstance() *LogSysRequestDao {
 	return &LogSysRequestDao{
-		Base{
-			Orm: utils.ORM(),
-		},
+		connect: connectInit(),
 	}
 }
 
 func (dao *LogSysRequestDao) Insert(request models.LogSysRequest) (bool, int64) {
-	id, err := dao.base.Orm.InsertOne(request)
+	id, err := dao.connect.orm.InsertOne(request)
 	return helper.CheckErr(err), id
 }

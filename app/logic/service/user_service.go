@@ -25,6 +25,7 @@ func (service *UserService) Create(filter filters.UserRegister) (err error) {
 		return helper.CreateErr(resource.Trans("email_exists"))
 	}
 	user := &models.UcUser{
+		OutUid:    helper.Md5(filter.Email + helper.CreateUUID()),
 		UserName:  filter.UserName,
 		Password:  helper.CreatePwd(filter.Password),
 		TokenSlat: helper.CreateUUID(),

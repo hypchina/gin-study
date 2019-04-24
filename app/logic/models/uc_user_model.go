@@ -2,6 +2,7 @@ package models
 
 type UcUser struct {
 	Id        int64  `json:"-"`
+	OutUid    string `json:"out_uid"`
 	UserName  string `json:"username" xorm:"username"`
 	Password  string `json:"-"`
 	TokenSlat string `json:"-"`

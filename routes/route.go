@@ -14,6 +14,7 @@ func Dispatch(r *gin.Engine) {
 func apiRoute(r *gin.Engine) {
 	BaseController := &controllers.Controller{}
 	UserController := &api.UserController{}
+	BroadcastController := &api.Broadcast{}
 	r.NoRoute(BaseController.Error404)
 	r.NoMethod(BaseController.Error404)
 	auth := r.Group("/")
@@ -25,6 +26,8 @@ func apiRoute(r *gin.Engine) {
 		auth.Use(middleware.Auth())
 		{
 			auth.GET("/user", UserController.Index)
+			auth.GET("/broadcast/notify", BroadcastController.Notify)
+			auth.GET("/broadcast/read", BroadcastController.Read)
 		}
 	}
 }
