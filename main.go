@@ -12,6 +12,7 @@ func main() {
 	env.Init()
 	utils.DbInit()
 	utils.RedisInit()
+	gin.SetMode(conf.Config().Common.Mode)
 	r := gin.Default()
 	routes.Dispatch(r)
 	_ = r.Run(conf.Config().Common.Addr)

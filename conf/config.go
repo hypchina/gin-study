@@ -6,7 +6,7 @@ import (
 )
 
 type common struct {
-	Env    string
+	Mode   string
 	Lang   string
 	Listen string
 	Addr   string
@@ -34,7 +34,7 @@ func Config() *config {
 	db, _ := strconv.Atoi(env.Get("redis_db", "0"))
 	return &config{
 		Common: common{
-			Env:    env.Get("env", "local"),
+			Mode:   env.Get("mode", "debug"),
 			Listen: env.Get("listen", "8080"),
 			Addr:   ":" + env.Get("listen", "8080"),
 			Lang:   env.Get("lang", "cn"),

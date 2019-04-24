@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"gin-study/conf"
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/xormplus/xorm"
 	"log"
@@ -27,12 +28,13 @@ func DbInit() { // 使用init来自动连接数据库，并创建ORM实例
 	}
 	orm.SetMaxIdleConns(2)  //设置连接池的空闲数大小
 	orm.SetMaxOpenConns(20) //设置最大打开连接数
-	orm.ShowSQL(true)       // 测试环境，显示每次执行的sql语句长什么样子
+	if conf.Config().Common.Mode == gin.DebugMode {
+		orm.ShowSQL(true) // 测试环境，显示每次执行的sql语句长什么样子
+	}
 	timer := time.NewTicker(time.Minute * 1)
 	ormInit = true
 	go func(x *xorm.Engine) {
-		for t := range timer.C {
-			log.Println("mysql:ticker:" + t.String())
+		for range timer.C {
 			err = x.Ping()
 			if err != nil {
 				log.Fatalf("db connect error: %#v\n", err.Error())
