@@ -40,5 +40,4 @@ func (ctrl *Broadcast) Read(ctx *gin.Context) {
 	}
 
 	ctrl.Response(ctx, enum.StatusNotFound)
-	return
 }

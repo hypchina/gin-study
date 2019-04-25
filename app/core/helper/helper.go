@@ -2,11 +2,11 @@ package helper
 
 import (
 	"crypto/md5"
-	"errors"
 	"fmt"
 	"gin-study/app/logic/enum"
-	"github.com/apex/log"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
+	"log"
 	"strings"
 	"time"
 )
@@ -70,7 +70,19 @@ func CheckErr(err error, isThrows ...bool) bool {
 		isThrow = isThrows[0]
 	}
 	if err != nil {
-		log.Error("checkErr:" + err.Error())
+		type stackTracer interface {
+			StackTrace() errors.StackTrace
+		}
+		e1 := errors.New(err.Error())
+		errX := errors.Wrap(e1, "outer")
+		errY, ok := errors.Cause(errX).(stackTracer)
+		if !ok {
+			log.Println("CheckError:Without-Stack:" + err.Error())
+		} else {
+			stack := errY.StackTrace()
+			errStr := fmt.Sprintf("%+v", stack[1:2])
+			log.Println("CheckError:"+err.Error(), ",Stack:"+strings.ReplaceAll(errStr, "\n", " ---->"))
+		}
 		if isThrow {
 			panic(err)
 		}

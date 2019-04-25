@@ -18,7 +18,7 @@ func (ctrl *Controller) Error404(ctx *gin.Context) {
 }
 
 func (ctrl *Controller) Ping(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, bean.ResponseBeanInstance().Response(enum.StatusOk, "ping"))
+	ctx.JSON(http.StatusOK, bean.ResponseBeanInstance().Response(enum.StatusOk, "pong"))
 	ctx.Abort()
 }
 
