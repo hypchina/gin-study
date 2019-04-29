@@ -24,10 +24,16 @@ type redis struct {
 	Db       int
 }
 
+type nim struct {
+	AppKey    string
+	AppSecret string
+}
+
 type config struct {
 	Common common
 	Mysql  mysql
 	Redis  redis
+	Nim    nim
 }
 
 func Config() *config {
@@ -48,6 +54,10 @@ func Config() *config {
 			Addr:     env.Get("redis_addr"),
 			Password: env.Get("redis_password"),
 			Db:       db,
+		},
+		Nim: nim{
+			AppKey:    env.Get("nim_app_key"),
+			AppSecret: env.Get("nim_app_secret"),
 		},
 	}
 }

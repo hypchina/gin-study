@@ -50,3 +50,7 @@ func (service *BroadcastService) ReadById(msgId string, outUid string) (*models.
 	}
 	return nil, false
 }
+
+func (service *BroadcastService) AddQueueById(msgId string) {
+
+}

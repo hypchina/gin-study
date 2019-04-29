@@ -21,7 +21,7 @@ func BroadcastDaoInstance() *BroadcastDao {
 func (dao *BroadcastDao) Insert(LogUserBroadcast *models.LogUserBroadcast) bool {
 	_, err := dao.connect.orm.Insert(LogUserBroadcast)
 	var redisKey string
-	redisKey = enum.RedisBroadcast(LogUserBroadcast.MsgId)
+	redisKey = enum.RedisBroadcastDetail(LogUserBroadcast.MsgId)
 	redisVal, _ := json.Marshal(LogUserBroadcast)
 	_time, err := helper.GetTimeByDate(LogUserBroadcast.ExpireAt)
 	expireAt := time.Duration(_time.Unix()) * time.Second
@@ -32,7 +32,7 @@ func (dao *BroadcastDao) Insert(LogUserBroadcast *models.LogUserBroadcast) bool 
 func (dao *BroadcastDao) GetByMsgId(msgId string) (*models.LogUserBroadcast, bool) {
 	var redisKey string
 	LogUserBroadcast := models.LogUserBroadcast{}
-	redisKey = enum.RedisBroadcast(msgId)
+	redisKey = enum.RedisBroadcastDetail(msgId)
 	redisVal, err := dao.connect.redisClient.Get(redisKey).Result()
 	if err != nil {
 		return nil, helper.CheckErr(err)

@@ -20,6 +20,7 @@ func (ctrl *Broadcast) Notify(ctx *gin.Context) {
 	}
 	broadcast := service.BroadcastServiceInstance().CreateAndNotify(&filter)
 	if broadcast != nil {
+		service.NewImService().Push(broadcast)
 		ctrl.Response(ctx, enum.StatusOk, broadcast)
 		return
 	}
