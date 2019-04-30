@@ -33,7 +33,7 @@ func (handel *redisHandel) Insert(jobStruct *JobStruct) error {
 	}
 
 	jobStructKeyName := handel.getJobStructName(jobStruct.Topic, jobStruct.JobId)
-	err = handel.client.SetNX(jobStructKeyName, jobStructJson, time.Duration(jobStruct.ExpireAt)*time.Second).Err()
+	err = handel.client.SetNX(jobStructKeyName, jobStructJson, time.Duration(jobStruct.ExpireAt-time.Now().Unix())*time.Second).Err()
 	if err != nil {
 		return err
 	}
@@ -85,18 +85,17 @@ func (handel *redisHandel) Read(topic string, readAfterExpireIn time.Duration) (
 	return &jobStruct, nil
 }
 
-func (handel *redisHandel) ReadByMulti(topic string, limit int, readAfterExpireIn time.Duration) ([]*JobStruct, error) {
+func (handel *redisHandel) ReadByMulti(topic string, limit int, readAfterExpireIn time.Duration) ([]JobStruct, error) {
 
-	var JobStructSet []*JobStruct
-	var jobStruct *JobStruct
+	var JobStructSet []JobStruct
 	var err error
 	var jobId string
+
 	for i := 0; i < limit; i++ {
 
-		jobStruct = nil
 		jobId, err = handel.client.RPop(handel.getListNameByTopic(topic)).Result()
 		if err != nil {
-			continue
+			break
 		}
 
 		if jobId == "" && err != nil {
@@ -109,6 +108,7 @@ func (handel *redisHandel) ReadByMulti(topic string, limit int, readAfterExpireI
 			continue
 		}
 
+		var jobStruct JobStruct
 		err3 := json.Unmarshal([]byte(jobStructJson), &jobStruct)
 		if err3 != nil {
 			continue
@@ -116,6 +116,10 @@ func (handel *redisHandel) ReadByMulti(topic string, limit int, readAfterExpireI
 
 		_ = handel.client.Expire(jobStructKey, readAfterExpireIn).Err()
 		JobStructSet = append(JobStructSet, jobStruct)
+	}
+
+	if err != nil && err.Error() == "redis: nil" {
+		err = nil
 	}
 
 	return JobStructSet, err
@@ -132,9 +136,8 @@ func (handel *redisHandel) DelayTicker() error {
 	if err != nil {
 		return err
 	}
-	log.Println("delayTicker-length:", len(Z))
+	//log.Println("delayTicker-length:", len(Z))
 	for _, zItem := range Z {
-		log.Println("delayTicker-range:", zItem.Member)
 		handel.client.ZRem(delayNameKey, zItem.Member)
 		if int64(zItem.Score) < (time.Now().Unix() - 300) {
 			log.Println("delayTicker-expire:", err.Error())

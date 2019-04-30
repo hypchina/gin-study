@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type RequestInterface interface {
+type IRequest interface {
 	GetQuery() (url.Values, error)
 	GetHeader(string, string) map[string]string
 	GetMethod() string

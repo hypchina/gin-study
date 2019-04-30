@@ -1,11 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"gin-study/app/core/extend/env"
+	"gin-study/app/core/helper"
 	"gin-study/app/core/utils"
 	"gin-study/app/logic/enum"
+	"gin-study/app/logic/models"
 	"gin-study/library/mq"
+	"log"
+	"time"
 )
 
 func main() {
@@ -15,12 +19,23 @@ func main() {
 	job := mq.NewJob(utils.RedisClient())
 	defer utils.RedisClient().Close()
 	defer utils.ORM().Close()
-	job.DelayTicker()
-	job.Subscribe(enum.TagJobTopicBroadcast, func(jobStruct *mq.JobStruct, e error) {
+	go job.DelayTicker()
+	job.Subscribe(enum.TagJobTopicBroadcast, func(jobStruct mq.JobStruct, e error) {
+
 		if e != nil {
-			fmt.Println("subscribe", e.Error())
+			log.Println(e)
+			helper.CheckErr(e)
 			return
 		}
-		fmt.Println(jobStruct.Body)
+
+		var broadcast models.LogUserBroadcast
+		err := json.Unmarshal([]byte(jobStruct.Body), &broadcast)
+
+		if err != nil {
+			log.Println("subscribe:parse-broadcast:error", err.Error())
+			return
+		}
+
+		log.Println("subscribe:broadcast:", time.Now().Unix(), broadcast.MsgBody)
 	})
 }

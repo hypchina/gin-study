@@ -3,7 +3,11 @@ package mq
 import (
 	"fmt"
 	"gin-study/app/core/extend/env"
+	"gin-study/app/core/helper"
 	"gin-study/app/core/utils"
+	"gin-study/app/logic/enum"
+	"gin-study/app/logic/models"
+	"strconv"
 	"testing"
 )
 
@@ -12,15 +16,25 @@ func TestNewJob(t *testing.T) {
 	utils.DbInit()
 	utils.RedisInit()
 	job := NewJob(utils.RedisClient())
-	type XX struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
+	j := 30
+	for i := 0; i < 30; i++ {
+		broadcast := &models.LogUserBroadcast{
+			MsgId:     helper.CreateUUID(),
+			FromUid:   "007",
+			ToUid:     "9527",
+			MsgLevel:  1,
+			MsgType:   2,
+			MsgBody:   "你好第" + strconv.Itoa(i) + "号",
+			ReadState: 0,
+			ExpireAt:  helper.GetDateByFormat(),
+			NotifyAt:  helper.GetDateByFormat(),
+			ReadAt:    helper.GetDefautlDate(),
+			CreatedAt: helper.GetDateByFormat(),
+		}
+		_, err := job.Publish(enum.TagJobTopicBroadcast, 3, broadcast, "tag:default")
+		j--
+		fmt.Println(broadcast.MsgBody, err)
 	}
-	X := XX{Id: 1, Name: "xxx"}
-	x, err := job.Publish("topic:x", 30, X, "tag:default")
-	x, err = job.Publish("topic:x", 30, X, "tag:default")
-	x, err = job.Publish("topic:x", 30, X, "tag:default")
-	fmt.Println(x, err)
 }
 
 func TestJob_Publish(t *testing.T) {
@@ -28,7 +42,7 @@ func TestJob_Publish(t *testing.T) {
 	utils.DbInit()
 	utils.RedisInit()
 	job := NewJob(utils.RedisClient())
-	job.Subscribe("topic:x", func(jobStruct *JobStruct, e error) {
+	job.Subscribe(enum.TagJobTopicBroadcast, func(jobStruct JobStruct, e error) {
 		fmt.Println("subscribe:", jobStruct, e)
 	})
 }

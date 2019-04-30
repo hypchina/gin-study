@@ -29,7 +29,7 @@ func NewClient(appKey string, appSecret string) *client {
 	}
 }
 
-func (client *client) Do(request request.RequestInterface) (respStr string, err error) {
+func (client *client) Do(request request.IRequest) (respStr string, err error) {
 
 	values, err := request.GetQuery()
 	if err != nil {

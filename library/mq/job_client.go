@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/go-redis/redis"
+	"log"
 	"time"
 )
 
 type job struct {
 	defaultExpireIn   time.Duration
 	readAfterExpireIn time.Duration
+	delayTickerIn     time.Duration
+	subscribeTickerIn time.Duration
 	handel            *redisHandel
 }
 
@@ -17,13 +20,15 @@ func NewJob(redisClient *redis.Client) *job {
 	return &job{
 		defaultExpireIn:   time.Second * 86400 * 30,
 		readAfterExpireIn: time.Second * 60,
+		subscribeTickerIn: time.Second * 1,
+		delayTickerIn:     time.Second * 2,
 		handel:            newRedisHandle(redisClient),
 	}
 }
 
 func (job *job) Publish(topic string, delay int64, body interface{}, tag string) (*JobStruct, error) {
-	paramType := fmt.Sprintf("%T", body)
 	var bodyStr string
+	paramType := fmt.Sprintf("%T", body)
 	if paramType == "string" {
 		bodyStr = body.(string)
 	} else {
@@ -50,12 +55,11 @@ func (job *job) Publish(topic string, delay int64, body interface{}, tag string)
 	return jobStruct, nil
 }
 
-func (job *job) Subscribe(topic string, callback func(*JobStruct, error)) {
-	timeX := time.NewTicker(time.Second * 1)
+func (job *job) Subscribe(topic string, callback func(JobStruct, error)) {
+	timeX := time.NewTicker(job.subscribeTickerIn)
 	for range timeX.C {
 		jobStructSet, err := job.handel.ReadByMulti(topic, 10, job.readAfterExpireIn)
-		fmt.Println("Subscribe", err)
-		if jobStructSet == nil && err == nil {
+		if len(jobStructSet) == 0 && err == nil {
 			continue
 		}
 		for _, jobStruct := range jobStructSet {
@@ -65,11 +69,11 @@ func (job *job) Subscribe(topic string, callback func(*JobStruct, error)) {
 }
 
 func (job *job) DelayTicker() {
-	timerX := time.NewTicker(time.Second * 2)
+	timerX := time.NewTicker(job.delayTickerIn)
 	for range timerX.C {
 		err := job.handel.DelayTicker()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 	}
 }
