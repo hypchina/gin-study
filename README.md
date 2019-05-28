@@ -26,7 +26,7 @@
     ├── go.sum
     ├── main.go         项目入口
     ├── resource        其他资源文件
-    │   └── lang.go         语文包
+    │   └── lang.go         语言包
     ├── routes          路由
     │   └── route.go
     └── vendor          包管理目录

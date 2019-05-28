@@ -1,9 +1,9 @@
-package example
+package data_structure
 
 import "fmt"
 
 type node struct {
-	data interface{}
+	Data interface{}
 	next *node
 }
 
@@ -28,7 +28,7 @@ func (linkedList *linkedList) init() {
 
 func (linkedList *linkedList) Append(data interface{}) {
 	node := &node{
-		data: data,
+		Data: data,
 		next: nil,
 	}
 	if linkedList.size == 0 {
@@ -47,7 +47,7 @@ func (linkedList *linkedList) Insert(index uint, data interface{}) error {
 		return fmt.Errorf("index %d is out of list", index)
 	}
 	node := &node{
-		data: data,
+		Data: data,
 		next: nil,
 	}
 	if index == 0 {

@@ -1,7 +1,8 @@
-package example
+package algorithm
 
 import (
 	"fmt"
+	"gin-study/example/data_structure"
 	"testing"
 )
 
@@ -15,8 +16,8 @@ func TestNewCache(t *testing.T) {
 	cache.Get("b")
 	cache.Set("e", 4)
 
-	cache.cacheList.Each(func(index int, doubleNode *DoubleNode) bool {
-		fmt.Println(index, doubleNode.data, doubleNode.prev.data, doubleNode.next.data)
+	cache.cacheList.Each(func(index int, doubleNode *data_structure.DoubleNode) bool {
+		fmt.Println(index, doubleNode.Data, doubleNode.Prev.Data, doubleNode.Next.Data)
 		return true
 	})
 

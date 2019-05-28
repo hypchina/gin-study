@@ -1,4 +1,6 @@
-package example
+package algorithm
+
+import "gin-study/example/data_structure"
 
 type entry struct {
 	key string
@@ -7,28 +9,28 @@ type entry struct {
 
 type cache struct {
 	cacheSize int
-	cacheList *doubleLinkedList
-	cacheMap  map[string]*DoubleNode
+	cacheList *data_structure.DoubleLinkedList
+	cacheMap  map[string]*data_structure.DoubleNode
 }
 
 func NewCache(limit int) *cache {
 	return &cache{
 		cacheSize: limit,
-		cacheList: NewDoubleLinkedList(),
-		cacheMap:  make(map[string]*DoubleNode),
+		cacheList: data_structure.NewDoubleLinkedList(),
+		cacheMap:  make(map[string]*data_structure.DoubleNode),
 	}
 }
 
 func (cache *cache) Set(key string, val interface{}) {
 
 	if cache.cacheMap == nil {
-		cache.cacheList = NewDoubleLinkedList()
-		cache.cacheMap = make(map[string]*DoubleNode)
+		cache.cacheList = data_structure.NewDoubleLinkedList()
+		cache.cacheMap = make(map[string]*data_structure.DoubleNode)
 	}
 
 	if entryEle, exists := cache.cacheMap[key]; exists {
 		cache.cacheList.MovToHead(entryEle)
-		entryEle.data.(*entry).val = val
+		entryEle.Data.(*entry).val = val
 		return
 	}
 
@@ -49,7 +51,7 @@ func (cache *cache) Get(key string) (val interface{}, ok bool) {
 	}
 	if ele, hit := cache.cacheMap[key]; hit {
 		cache.cacheList.MovToHead(ele)
-		return ele.data.(*entry).val, true
+		return ele.Data.(*entry).val, true
 	}
 	return
 }
@@ -68,11 +70,11 @@ func (cache *cache) Clear() {
 	cache.cacheList = nil
 }
 
-func (cache *cache) All() *doubleLinkedList {
+func (cache *cache) All() *data_structure.DoubleLinkedList {
 	return cache.cacheList
 }
 
-func (cache *cache) removeElement(ele *DoubleNode) {
+func (cache *cache) removeElement(ele *data_structure.DoubleNode) {
 	cache.cacheList.Remove(ele)
-	delete(cache.cacheMap, ele.data.(*entry).key)
+	delete(cache.cacheMap, ele.Data.(*entry).key)
 }
