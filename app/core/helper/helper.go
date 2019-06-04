@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	StartDate = "2006-01-02 15:04:05"
+	StartDate       = "2006-01-02 15:04:05"
+	StartDateWithMs = "2006-01-02 15:04:05.000"
 )
 
 func CreateUUID() string {
@@ -39,12 +40,20 @@ func GetDateByFormat(timeParams ...time.Time) string {
 	return timeVars.Format(StartDate)
 }
 
+func GetDateByFormatWithMs(timeParams ...time.Time) string {
+	timeVars := time.Now()
+	if len(timeParams) > 0 {
+		timeVars = timeParams[0]
+	}
+	return timeVars.Format(StartDateWithMs)
+}
+
 func GetTimeByDate(dateString string) (time.Time, error) {
 	_time, err := time.Parse(StartDate, dateString)
 	return _time, err
 }
 
-func GetDefautlDate() string {
+func GetDefaultDate() string {
 	return "0000-00-00 00:00:00"
 }
 

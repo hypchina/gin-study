@@ -16,7 +16,7 @@ func Request() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		utils.Try(func() {
 			ctx.Writer.Header().Set(enum.TagRequestId, helper.CreateUUID())
-			ctx.Writer.Header().Set(enum.TagRequestAt, helper.GetDateByFormat())
+			ctx.Writer.Header().Set(enum.TagRequestAt, helper.GetDateByFormatWithMs())
 			ctx.Next()
 		}).Catch(&bean.ResponseBean{}, func(i interface{}) {
 			ResponseBean, _ := (i).(*bean.ResponseBean)
@@ -31,7 +31,7 @@ func Request() gin.HandlerFunc {
 			if !ok {
 				ResponseBean = bean.ResponseBeanInstance().Response(enum.StatusUnknownResponse)
 			}
-			ctx.Writer.Header().Set(enum.TagResponseAt, helper.GetDateByFormat())
+			ctx.Writer.Header().Set(enum.TagResponseAt, helper.GetDateByFormatWithMs())
 			ctx.JSON(enum.StatusOk, ResponseBean)
 			ctx.Abort()
 			service.LogSysRequestServiceInstance().SyncInsert(ctx, ResponseBean)

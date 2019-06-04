@@ -2,10 +2,12 @@ package service
 
 import (
 	"gin-study/app/core/helper"
+	"gin-study/app/core/utils"
 	"gin-study/app/logic/bean"
 	"gin-study/app/logic/dao"
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/models"
+	"gin-study/library/mq"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,7 +36,14 @@ func (service *LogSysRequestService) SyncInsert(ctx *gin.Context, bean *bean.Res
 		ResponseMsg:   bean.Msg,
 		ResponseBody:  "",
 		ResponseAt:    ctx.Writer.Header().Get(enum.TagResponseAt),
-		CreatedAt:     helper.GetDateByFormat(),
+		CreatedAt:     helper.GetDateByFormatWithMs(),
 	}
-	go service.logSysRequestDao.Insert(LogSysRequestModel)
+	go func() {
+		_, err := mq.NewJob(utils.RedisClient()).Publish(enum.TagJobTopicRequestLog, 0, LogSysRequestModel, enum.TagJobTagDefault)
+		helper.CheckErr(err)
+	}()
+}
+
+func (service *LogSysRequestService) Insert(LogSysRequestModel models.LogSysRequest) (bool, int64) {
+	return service.logSysRequestDao.Insert(LogSysRequestModel)
 }

@@ -16,6 +16,7 @@ func LogSysRequestDaoInstance() *LogSysRequestDao {
 }
 
 func (dao *LogSysRequestDao) Insert(request models.LogSysRequest) (bool, int64) {
+	request.CreatedAt = helper.GetDateByFormatWithMs()
 	id, err := dao.connect.orm.InsertOne(request)
 	return helper.CheckErr(err), id
 }

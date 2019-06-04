@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"gin-study/app/core/utils"
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/models"
@@ -20,12 +19,10 @@ func NewImService() *imService {
 
 //异步发送消息失败之后转为同步
 func (service *imService) SendWithAsyncAndFailSync(broadcast *models.LogUserBroadcast) {
-	var respStr string
 	_, err := mq.NewJob(utils.RedisClient()).Publish(enum.TagJobTopicBroadcast, 0, broadcast, enum.TagJobTagDefault)
 	if err != nil {
-		respStr, err = service.SendWithSync(broadcast)
+		_, err = service.SendWithSync(broadcast)
 	}
-	fmt.Println(respStr, err)
 }
 
 //同步发送

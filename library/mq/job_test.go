@@ -28,7 +28,7 @@ func TestNewJob(t *testing.T) {
 			ReadState: 0,
 			ExpireAt:  helper.GetDateByFormat(),
 			NotifyAt:  helper.GetDateByFormat(),
-			ReadAt:    helper.GetDefautlDate(),
+			ReadAt:    helper.GetDefaultDate(),
 			CreatedAt: helper.GetDateByFormat(),
 		}
 		_, err := job.Publish(enum.TagJobTopicBroadcast, 3, broadcast, "tag:default")

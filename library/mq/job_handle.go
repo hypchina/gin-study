@@ -62,7 +62,7 @@ func (handel *redisHandel) Insert(jobStruct *JobStruct) error {
 
 func (handel *redisHandel) Read(topic string, readAfterExpireIn time.Duration) (*JobStruct, error) {
 
-	jobId, err := handel.client.LPop(handel.getListNameByTopic(topic)).Result()
+	jobId, err := handel.client.RPop(handel.getListNameByTopic(topic)).Result()
 
 	if jobId == "" && err != nil {
 		return nil, nil
