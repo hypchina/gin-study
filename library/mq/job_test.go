@@ -42,15 +42,7 @@ func TestJob_Publish(t *testing.T) {
 	utils.DbInit()
 	utils.RedisInit()
 	job := NewJob(utils.RedisClient())
-	job.Subscribe(enum.TagJobTopicBroadcast, func(jobStruct JobStruct, e error) {
-		fmt.Println("subscribe:", jobStruct, e)
+	job.Subscribe(enum.TagJobTopicBroadcast, func(jobStruct JobStruct) (isAck bool) {
+		return true
 	})
-}
-
-func TestJob_DelayTicker(t *testing.T) {
-	env.Init()
-	utils.DbInit()
-	utils.RedisInit()
-	job := NewJob(utils.RedisClient())
-	job.DelayTicker()
 }

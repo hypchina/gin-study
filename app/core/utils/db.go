@@ -26,11 +26,14 @@ func DbInit() { // 使用init来自动连接数据库，并创建ORM实例
 		log.Fatalln(err)
 		return
 	}
+
 	orm.SetMaxIdleConns(10)  //设置连接池的空闲数大小
 	orm.SetMaxOpenConns(200) //设置最大打开连接数
+
 	if conf.Config().Common.Mode == gin.DebugMode {
 		orm.ShowSQL(true) // 测试环境，显示每次执行的sql语句长什么样子
 	}
+
 	timer := time.NewTicker(time.Minute * 1)
 	ormInit = true
 	go func(x *xorm.Engine) {

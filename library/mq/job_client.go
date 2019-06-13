@@ -3,31 +3,37 @@ package mq
 import (
 	"encoding/json"
 	"fmt"
+	"gin-study/app/core/helper"
 	"github.com/go-redis/redis"
 	"time"
 )
 
 type job struct {
+	topic               string
 	defaultExpireIn     time.Duration
 	readAfterExpireIn   time.Duration
 	delayTickerIn       time.Duration
+	retryTickerIn       time.Duration
 	subscribeTickerIn   time.Duration
-	subscribeQueueLimit int
+	subscribeQueueLimit int64
+	delayTickerLimit    int64
 	handel              *redisHandel
 }
 
 func NewJob(redisClient *redis.Client) *job {
 	return &job{
-		subscribeQueueLimit: 200,
+		subscribeQueueLimit: 500,
+		delayTickerLimit:    300,
 		defaultExpireIn:     time.Second * 86400 * 30,
 		readAfterExpireIn:   time.Second * 60,
 		subscribeTickerIn:   time.Second * 1,
 		delayTickerIn:       time.Second * 2,
+		retryTickerIn:       time.Second * 2,
 		handel:              newRedisHandle(redisClient),
 	}
 }
 
-func (job *job) SetSubscribeQueueLimit(subscribeQueueLimit int) *job {
+func (job *job) SetSubscribeQueueLimit(subscribeQueueLimit int64) *job {
 	if subscribeQueueLimit < 1 {
 		subscribeQueueLimit = 1
 	}
@@ -64,16 +70,34 @@ func (job *job) Publish(topic string, delay int64, body interface{}, tag string)
 	return jobStruct, nil
 }
 
-func (job *job) Subscribe(topic string, callback func(JobStruct, error)) {
+func (job *job) Subscribe(topic string, callback func(JobStruct) (isAck bool)) {
+
+	go job.delayTicker(topic)
+	go job.retryTicker(topic)
+
 	for {
 		startT := time.Now().Unix()
-		i := 0
+		var i int64
+		i = 0
+
 		for i = 0; i < job.subscribeQueueLimit; i++ {
+
 			jobStruct, err := job.handel.Read(topic, job.readAfterExpireIn)
-			if err != nil || jobStruct == nil {
+			if jobStruct == nil && err == nil {
 				break
 			}
-			callback(*jobStruct, err)
+
+			if err != nil {
+				continue
+			}
+
+			if jobStruct == nil {
+				continue
+			}
+
+			if callback(*jobStruct) {
+				job.handel.Ack(topic, jobStruct.JobId)
+			}
 		}
 		endT := time.Now().Unix()
 		if endT-startT < 1 {
@@ -85,12 +109,34 @@ func (job *job) Subscribe(topic string, callback func(JobStruct, error)) {
 	}
 }
 
-func (job *job) DelayTicker() {
-	timerX := time.NewTicker(job.delayTickerIn)
-	for range timerX.C {
-		err := job.handel.DelayTicker()
+func (job *job) delayTicker(topic string) {
+	for {
+		startT := time.Now().Unix()
+		err, ok := job.handel.DelayTicker(job.delayTickerLimit, topic)
 		if err != nil {
 			fmt.Println(err)
+		}
+		endT := time.Now().Unix()
+		if endT-startT < 2 {
+			if !ok {
+				time.Sleep(job.delayTickerIn)
+			}
+		}
+	}
+}
+
+func (job *job) retryTicker(topic string) {
+	for {
+		startT := time.Now().Unix()
+		err, ok := job.handel.Retry(topic)
+		if err != nil {
+			helper.CheckErr(err)
+		}
+		endT := time.Now().Unix()
+		if endT-startT < 2 {
+			if !ok {
+				time.Sleep(job.retryTickerIn)
+			}
 		}
 	}
 }

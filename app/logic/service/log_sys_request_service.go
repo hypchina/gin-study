@@ -39,11 +39,11 @@ func (service *LogSysRequestService) SyncInsert(ctx *gin.Context, bean *bean.Res
 		CreatedAt:     helper.GetDateByFormatWithMs(),
 	}
 	go func() {
-		_, err := mq.NewJob(utils.RedisClient()).Publish(enum.TagJobTopicRequestLog, 0, LogSysRequestModel, enum.TagJobTagDefault)
+		_, err := mq.NewJob(utils.RedisClient()).Publish(enum.TagJobTopicRequestLog, 1, LogSysRequestModel, enum.TagJobTagDefault)
 		helper.CheckErr(err)
 	}()
 }
 
-func (service *LogSysRequestService) Insert(LogSysRequestModel models.LogSysRequest) (bool, int64) {
+func (service *LogSysRequestService) Insert(LogSysRequestModel models.LogSysRequest) (int64, error) {
 	return service.logSysRequestDao.Insert(LogSysRequestModel)
 }
