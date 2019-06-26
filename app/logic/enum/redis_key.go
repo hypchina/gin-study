@@ -5,6 +5,7 @@ import "strconv"
 const (
 	nsBroadcastDetail = "broadcast:detail"
 	nsBroadcastQueue  = "broadcast:queue"
+	nsLogCollectQueue = "log_collect:queue:"
 	nsToken           = "token:"
 	nsUser            = "user:"
 )
@@ -23,4 +24,8 @@ func RedisBroadcastQueue(key string) string {
 
 func RedisTokenKey(key string) string {
 	return nsToken + key
+}
+
+func RedisLogCollectQueue(key string) string {
+	return nsLogCollectQueue + key
 }

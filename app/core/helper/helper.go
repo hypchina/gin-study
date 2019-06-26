@@ -48,6 +48,12 @@ func GetDateByFormatWithMs(timeParams ...time.Time) string {
 	return timeVars.Format(StartDateWithMs)
 }
 
+func DateWithMs2TimestampWithMs(date string) int64 {
+	loc, _ := time.LoadLocation("Asia/Chongqing")
+	tm2, _ := time.ParseInLocation(StartDateWithMs, date, loc)
+	return tm2.Local().UnixNano() / int64(time.Millisecond)
+}
+
 func GetTimeByDate(dateString string) (time.Time, error) {
 	_time, err := time.Parse(StartDate, dateString)
 	return _time, err

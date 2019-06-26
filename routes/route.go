@@ -14,6 +14,7 @@ func Dispatch(r *gin.Engine) {
 func apiRoute(r *gin.Engine) {
 	BaseController := &controllers.Controller{}
 	UserController := &api.UserController{}
+	LogCollectController := &api.LogController{}
 	BroadcastController := &api.Broadcast{}
 	r.NoRoute(BaseController.Error404)
 	r.NoMethod(BaseController.Error404)
@@ -23,6 +24,7 @@ func apiRoute(r *gin.Engine) {
 		auth.POST("/", BaseController.Ping)
 		auth.POST("/user/register", UserController.Register)
 		auth.POST("/user/login", UserController.Login)
+		auth.POST("/log_collect/create", LogCollectController.Create)
 		auth.Use(middleware.Auth())
 		{
 			auth.GET("/user", UserController.Index)
