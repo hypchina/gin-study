@@ -9,7 +9,6 @@ import (
 	"gin-study/app/logic/enum"
 	"gin-study/app/logic/models"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 type LogSysRequestService struct {
@@ -49,7 +48,7 @@ func (service *LogSysRequestService) SyncInsert(ctx *gin.Context, bean *bean.Res
 		bodyBytes, _ := json.Marshal(LogSysRequestModel)
 		bodyStr := string(bodyBytes)
 		err := utils.RedisClient().LPush("log:sync:app", bodyStr).Err()
-		log.Println(err)
+		helper.CheckErr(err)
 		//_, err := mq.NewJob(utils.RedisClient()).Publish(enum.TagJobTopicRequestLog, 1, LogSysRequestModel, enum.TagJobTagDefault)
 		//helper.CheckErr(err)
 	}()

@@ -6,6 +6,8 @@ type baseFilter struct {
 
 type AuthToken struct {
 	ClientId  string `form:"client_id" uri:"client_id" binding:"required"`
+	Once      string `form:"once" uri:"once" binding:"required"`
+	Sign      string `form:"sign" uri:"sign" binding:"required"`
 	Timestamp int64  `form:"timestamp" uri:"timestamp" binding:"required"`
 }
 
@@ -17,7 +19,7 @@ type UserRegister struct {
 }
 
 type UserLogin struct {
-	Email    string `form:"email" binding:"required"`
+	Email    string `form:"email" binding:"required,email"`
 	Password string `form:"password" binding:"required"`
 	baseFilter
 }

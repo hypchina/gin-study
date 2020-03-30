@@ -41,7 +41,8 @@ func (ctrl *UserController) Register(ctx *gin.Context) {
 func (ctrl *UserController) Login(ctx *gin.Context) {
 
 	var filter filters.UserLogin
-	err := ctx.ShouldBind(&filter)
+	err := ctrl.Filter(ctx, &filter)
+	//err := ctx.ShouldBind(&filter)
 	if err != nil {
 		ctrl.Response(ctx, enum.StatusParamIsError, err.Error())
 		return
